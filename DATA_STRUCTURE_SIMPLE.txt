@@ -1,0 +1,143 @@
+EIA Community Feedback Management - Data Structure Overview
+================================================================
+
+                        ┌─────────────┐
+                        │   PROJECT   │ (Central Entity)
+                        │             │
+                        │ - id        │
+                        │ - name      │
+                        │ - status    │
+                        │ - dates     │
+                        └──────┬──────┘
+                               │
+          ┌────────────────────┼────────────────────┐
+          │                    │                    │
+          │                    │                    │
+    ┌─────▼─────┐      ┌───────▼───────┐    ┌─────▼──────┐
+    │  COMMENT  │      │ MITIGATION    │    │  TIMELINE  │
+    │           │      │  STRATEGY     │    │   EVENT    │
+    │ - id      │      │               │    │            │
+    │ - content │      │ - title       │    │ - date     │
+    │ - type    │      │ - category    │    │ - type     │
+    │ - status  │      │ - status      │    │ - status   │
+    │ - priority│      │               │    └────────────┘
+    └─────┬─────┘      └───────┬───────┘
+          │                    │
+          │                    │
+    ┌─────▼─────┐      ┌───────▼───────┐
+    │STAKEHOLDER│      │ PUBLIC        │
+    │           │      │ MEETING       │
+    │ - name    │      │               │
+    │ - type    │      │ - location    │
+    │ - email   │      │ - format      │
+    │ - mandatory│     │ - agenda      │
+    └───────────┘      └───────────────┘
+
+
+RELATIONSHIPS:
+
+1. Project → Comments (1:N)
+   - One project has many comments
+   - Comment belongs to one project
+
+2. Project → MitigationStrategies (1:N)
+   - One project has many mitigation strategies
+   - Strategy belongs to one project
+
+3. Project → TimelineEvents (1:N)
+   - One project has many timeline events
+   - Event belongs to one project
+
+4. Project → PublicMeetings (1:N)
+   - One project has many public meetings
+   - Meeting belongs to one project
+
+5. Stakeholder → Comments (1:N)
+   - One stakeholder submits many comments
+   - Comment submitted by one stakeholder
+
+6. Comment ↔ MitigationStrategy (N:N)
+   - Many comments linked to many strategies
+   - Via mitigationStrategyIds array
+
+7. Comment → ResponseAuthor (N:1)
+   - Many comments can have one response author
+   - ResponseAuthor embedded in Comment
+
+8. Comment ↔ Comment (N:N)
+   - Comments can relate to other comments
+   - Via relatedCommentIds and duplicateOf
+
+9. TimelineEvent ↔ Comment (N:N)
+   - Events can reference multiple comments
+   - Via relatedCommentIds array
+
+10. PublicMeeting ↔ Comment (N:N)
+    - Meetings can discuss multiple comments
+    - Via relatedCommentIds array
+
+
+DERIVED/COMPUTED ENTITIES:
+
+┌──────────────┐
+│   METRICS    │  (Computed from Comments)
+│              │
+│ - total      │
+│ - by status  │
+│ - by category│
+│ - avg time   │
+└──────────────┘
+
+┌──────────────┐
+│ COMMENT GROUP│  (Groups by Environmental Category)
+│              │
+│ - category   │
+│ - comments[] │
+│ - strategies[]│
+└──────────────┘
+
+
+ENUMERATIONS:
+
+CommentType: technical | procedural | substantive | out-of-scope
+EnvironmentalCategory: birds | water | visual-impact | noise | etc.
+CommentStatus: pending-review | assigned | draft-response | final | resolved
+ProjectStatus: scoping | assessment | public-comment | review | approved | rejected
+Priority: low | medium | high | critical
+StakeholderType: public | mandatory-agency | special-interest-group | municipality | developer
+
+
+DATA FLOW:
+
+Stakeholder submits → Comment on → Project
+                                      ↓
+                              Creates need for
+                                      ↓
+                              MitigationStrategy
+                                      ↓
+                              Tracked in TimelineEvent
+                                      ↓
+                              Discussed in PublicMeeting
+                                      ↓
+                              Generates Metrics
+
+
+STORAGE STRUCTURE:
+
+Browser localStorage:
+├── eia-projects (Project[])
+├── eia-comments (Comment[])
+├── eia-stakeholders (Stakeholder[])
+├── eia-mitigation-strategies (MitigationStrategy[])
+├── eia-timeline-events (TimelineEvent[])
+└── eia-public-meetings (PublicMeeting[])
+
+
+KEY DESIGN DECISIONS:
+
+1. IDs as foreign keys (projectId, stakeholderId) for loose coupling
+2. ID arrays for many-to-many relationships (mitigationStrategyIds, relatedCommentIds)
+3. Computed entities (Metrics, CommentGroup) for performance/denormalization
+4. Optional fields throughout for flexible data entry
+5. Embedded objects (ResponseAuthor) for simple composition
+
