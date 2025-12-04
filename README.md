@@ -2,6 +2,8 @@
 
 A TypeScript-based prototype for managing community feedback during Environmental Impact Assessment (EIA) processes, focused on the Iceland market.
 
+🌐 **Live Deployment:** https://legible-community-fb.pages.dev/
+
 ## 🚀 Features
 
 ### Core Functionality
