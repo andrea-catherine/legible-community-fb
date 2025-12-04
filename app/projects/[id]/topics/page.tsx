@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Shield, MessageSquare, Link as LinkIcon, CheckCircle2, AlertCircle } from 'lucide-react';
-import { getProject, getCommentsByTopic } from '@/lib/store';
+import { getProject, getCommentsByTopic, getProjects } from '@/lib/store';
 import type { Project, CommentGroup, Comment, MitigationStrategy } from '@/types';
 
 export default function ProjectTopicsPage({ params }: { params: { id: string } }) {

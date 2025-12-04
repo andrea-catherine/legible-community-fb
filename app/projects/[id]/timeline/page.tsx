@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Calendar, CheckCircle2, Clock, AlertCircle, MapPin, Users, FileText, Target, Gavel } from 'lucide-react';
-import { getProject, getTimelineEvents, getPublicMeetings } from '@/lib/store';
+import { getProject, getTimelineEvents, getPublicMeetings, getProjects } from '@/lib/store';
 import type { Project, TimelineEvent, PublicMeeting } from '@/types';
 import { format } from 'date-fns';
 
